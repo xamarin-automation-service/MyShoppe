@@ -24,7 +24,7 @@ namespace MyShop.Tests
 
             return ConfigureApp
 				.iOS
-//                .AppBundle(AppFile)
+                .AppBundle(AppFile)
 //                .InstalledApp(BundleId)
 				.StartApp();
         }

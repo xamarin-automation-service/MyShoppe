@@ -41,6 +41,10 @@
     <Compile Include="Tests\BasicTests.cs" />
     <Compile Include="BasePage.cs" />
     <Compile Include="Pages\StartPage.cs" />
+    <Compile Include="Pages\LocationsPage.cs" />
+    <Compile Include="Pages\LocationDetailsPage.cs" />
+    <Compile Include="Tests\LocationTests.cs" />
+    <Compile Include="AbstractSetup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

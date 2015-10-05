@@ -7,30 +7,17 @@ using Xamarin.UITest.Queries;
 
 namespace MyShop.Tests
 {
-    [TestFixture(Platform.Android)]
-    [TestFixture(Platform.iOS)]
-    public class BasicTests
+    public class BasicTests : AbstractSetup
     {
-        IApp app;
-        Platform platform;
-
         public BasicTests(Platform platform)
+            : base(platform)
         {
-            this.platform = platform;
-        }
-
-        [SetUp]
-        public void BeforeEachTest()
-        {
-            app = AppInitializer.StartApp(platform);
         }
 
         [Test]
         public void AppLaunches()
         {
             app.Screenshot("First screen.");
-            new StartPage(app, platform)
-                .OpenLocations();
             app.Repl();
         }
     }
