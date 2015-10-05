@@ -25,7 +25,11 @@ namespace MyShop.iOS
 
 			Xamarin.FormsMaps.Init();
 
-            
+            #if DEBUG
+            Xamarin.Calabash.Start();
+            #endif
+
+
 			Xamarin.Insights.Initialize("c3d88c6f124fdabdf8880b65845094bb7bad90ac");
 			Xamarin.Insights.ForceDataTransmission = true;
 			Microsoft.WindowsAzure.MobileServices.CurrentPlatform.Init();
