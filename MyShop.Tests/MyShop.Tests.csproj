@@ -49,4 +49,12 @@
     <Folder Include="Tests\" />
     <Folder Include="Pages\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MyShop.Android\MyShop.Android.csproj">
+      <Project>{1FBB5AB6-8432-4478-BF33-EB1E26F20945}</Project>
+      <Name>MyShop.Android</Name>
+      <ReferenceOutputAssembly>False</ReferenceOutputAssembly>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
 </Project>
