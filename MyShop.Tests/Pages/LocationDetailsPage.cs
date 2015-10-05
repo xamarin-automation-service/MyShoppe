@@ -32,7 +32,8 @@ namespace MyShop.Tests
             app.ScrollTo(CallButton);
             app.Screenshot("Scrolled to call button, tapping");
             app.Tap(CallButton);
-            app.WaitForNoElement(CallButton);
+            if (OnAndroid)
+                app.WaitForNoElement(CallButton);
             app.Screenshot("Call initiated");
         }
 

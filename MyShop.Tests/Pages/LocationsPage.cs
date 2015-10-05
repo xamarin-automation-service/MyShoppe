@@ -6,7 +6,7 @@ namespace MyShop.Tests
     public class LocationsPage : BasePage
     {
         public LocationsPage(IApp app, Platform platform)
-            : base(app, platform, x => x.Class("ConditionalFocusLayout"), x => x.Class("ConditionalFocusLayout"))
+            : base(app, platform, x => x.Class("ConditionalFocusLayout"), x => x.Class("UITableViewCellContentView"))
         {
         }
 
