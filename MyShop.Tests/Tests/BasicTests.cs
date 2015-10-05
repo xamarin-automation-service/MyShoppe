@@ -29,6 +29,9 @@ namespace MyShop.Tests
         public void AppLaunches()
         {
             app.Screenshot("First screen.");
+            new StartPage(app, platform)
+                .OpenLocations();
+            app.Repl();
         }
     }
 }
