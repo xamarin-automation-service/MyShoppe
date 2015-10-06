@@ -14,7 +14,7 @@ namespace MyShop.Tests
         {
         }
 
-        [Test]
+        //        [Test]
         public void AppLaunches()
         {
             app.Screenshot("First screen.");
