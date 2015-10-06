@@ -23,7 +23,7 @@ namespace MyShop.Tests
             : this(app, platform)
         {
             if (OnAndroid)
-                Assert.DoesNotThrow(() => app.WaitForElement(androidTrait), "Unable to verify on page: " + this.GetType().Name);
+                Assert.DoesNotThrow(() => app.WaitForElement(androidTrait, timeout: TimeSpan.FromSeconds(120)), "Unable to verify on page: " + this.GetType().Name);
             if (OniOS)
                 Assert.DoesNotThrow(() => app.WaitForElement(iOSTrait), "Unable to verify on page: " + this.GetType().Name);
 
