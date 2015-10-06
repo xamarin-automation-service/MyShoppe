@@ -68,9 +68,9 @@ namespace MyShop.Tests
             if (OniOS)
             {
                 StoreField = x => x.ClassFull("_UITextFieldRoundedRectBackgroundViewNeue").Index(0);
-                ServiceField = x => x.Class("UITextFieldLabel").Index(0);
-                DateField = x => x.Class("UITextFieldLabel").Index(1);
-                RatingField = x => x.Class("UITextFieldLabel").Index(2);
+                ServiceField = x => x.Class("UITextFieldLabel").Index(1);
+                DateField = x => x.Class("UITextFieldLabel").Index(2);
+                RatingField = x => x.Class("UITextFieldLabel").Index(3);
                 NameField = x => x.Marked("First and Last");
                 PhoneField = x => x.Marked("555-555-5555");
                 DoneButton = x => x.Marked("Done");
@@ -78,6 +78,9 @@ namespace MyShop.Tests
                 RequestCallBack =  x => x.Class("UISwitch");
                 FeedbackField = x => x.ClassFull("_UITextContainerView");
             }
+
+            Thread.Sleep(5000);
+            app.Screenshot("On Feedback Page");
         }
 
 
@@ -127,7 +130,6 @@ namespace MyShop.Tests
             app.Screenshot("Store Changed!");
             return this;
         }
-
 
         public FeedbackPage ChangeService(string ServiceName)
         {
@@ -197,7 +199,8 @@ namespace MyShop.Tests
 
             if (OnAndroid)
             {
-                app.Query(x => x.Id("datePicker").Invoke("updateDate", year, month, date)); 
+                Thread.Sleep(5000);
+                app.Query(x => x.Id("datePicker").Invoke("updateDate", year, (month-1), date)); 
 
                 if (app.Query("Done").Any())
                     app.Tap("Done");
@@ -236,14 +239,14 @@ namespace MyShop.Tests
             if (OnAndroid)
             {
                 int value = 10 - (Int32.Parse(Rating));
-                PickerScroll("Android", value);
+                PickerScrollRating("Android", value);
                 app.Tap(OKButton);
             }
 
             if (OniOS)
             {
                 int value = 10 - (Int32.Parse(Rating));
-                PickerScroll("iOS", value);
+                PickerScrollRating("iOS", value);
                 app.Tap(DoneButton);
             }
 
@@ -307,7 +310,7 @@ namespace MyShop.Tests
             app.Screenshot("Submitted the Feedback");
         }
 
-        private void PickerScroll(string platform, int count)
+        private void PickerScrollRating(string platform, int count)
         {
             if(platform.Equals("Android"))
             {
@@ -327,7 +330,28 @@ namespace MyShop.Tests
                     count --;
                 }
             }
+        }
 
+        private void PickerScroll(string platform, int count)
+        {
+            if(platform.Equals("Android"))
+            {
+                var view = app.Query(RatingDetailField)[0].Rect;
+                while (count > 0)
+                {
+                    app.DragCoordinates(view.CenterX, view.CenterY, view.X, view.Y);
+                    count--;
+                }
+            }
+
+            if (platform.Equals("iOS"))
+            {
+                while (count > 0)
+                {
+                    app.Tap(RatingDetailField);
+                    count --;
+                }
+            }
         }
     }
 }
