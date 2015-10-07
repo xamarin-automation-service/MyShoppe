@@ -1,20 +1,20 @@
 require "benchmark"
 
 ### PROPERTIES TO SET
-SLN_FILE = "MyShop.sln"
+SLN_FILE = "YourApp.sln"
 
-ANDROID_DIR = "MyShop.Android"
-IOS_DIR = "MyShop.iOS"
-TEST_DIR = "MyShop.Tests"
+ANDROID_DIR = "YourApp.Android"
+IOS_DIR = "YourApp.iOS"
+TEST_DIR = "YourApp.Tests"
 
-APK_FILE = "MyShop.Android/bin/Debug/com.refractored.myshoppe.apk"
-IPA_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS-1.2.ipa"
-DSYM_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS.app.dSYM"
+APK_FILE = "YourApp.Android/bin/Debug/YourApp.apk"
+IPA_FILE = "YourApp.iOS/bin/iPhone/Debug/YourApp.ipa"
+DSYM_FILE = "YourApp.iOS/bin/iPhone/Debug/YourApp.app.dSYM"
 
 # ANDROID_KEYSTORE = "debug.keystore"
 
 NUGET_VERSION = "1.1.1.255-dev"
-APP_NAME = "My Shoppe"
+APP_NAME = "Your App"
 ### END
 
 task :default => ['build:android', 'build:ios', 'build:tests']
@@ -27,8 +27,8 @@ task :help do
   puts 'build:ios => build:restore_packages'
   puts 'build:tests => build:restore_packages'
   puts 'build:restore_packages'
-  puts 'submit:android[user, api_key, (series, devices)] => build:android, build:tests'
-  puts 'submit:ios[user, api_key, (series, devices)] => build:ios, build:tests'
+  puts 'submit:android[user, api_key, (series, device_set)] => build:android, build:tests'
+  puts 'submit:ios[user, api_key, (series, device_set)] => build:ios, build:tests'
   puts 'clean'
   puts
   puts 'Optional environment variables:'
