@@ -315,7 +315,7 @@ namespace MyShop.Tests
         public void SubmitFeedback()
         {
             app.Tap(SubmitButton);
-            app.WaitForNoElement(SubmitButton, timeout: TimeSpan.FromSeconds(90));
+            app.WaitForNoElement(SubmitButton, timeout: TimeSpan.FromSeconds(120));
             app.Screenshot("Submitted the Feedback");
         }
 
