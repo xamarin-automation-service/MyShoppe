@@ -22,7 +22,8 @@ namespace MyShop.Tests
         readonly string SubmitButton = "Submit";
         readonly string OKButton = "OK";
 
-        enum StoreFields {
+        enum StoreFields
+        {
             XamarinAPS,
             XamarinArgentina,
             XamarinLondon,
@@ -30,11 +31,19 @@ namespace MyShop.Tests
             XamarinHQ
         }
 
-        enum ServiceFields {
-            Platform,TestCloud,Insights,Forms, Studio,VisualStudio,Other
+        enum ServiceFields
+        {
+            Platform,
+            TestCloud,
+            Insights,
+            Forms,
+            Studio,
+            VisualStudio,
+            Other
         }
 
-        enum Months { 
+        enum Months
+        {
             January = 1,
             February,
             March,
@@ -75,7 +84,7 @@ namespace MyShop.Tests
                 PhoneField = x => x.Marked("555-555-5555");
                 DoneButton = x => x.Marked("Done");
                 RatingDetailField = x => x.Class("UIPickerTableViewTitledCell").Index(2);
-                RequestCallBack =  x => x.Class("UISwitch");
+                RequestCallBack = x => x.Class("UISwitch");
                 FeedbackField = x => x.ClassFull("_UITextContainerView");
             }
 
@@ -200,7 +209,7 @@ namespace MyShop.Tests
             if (OnAndroid)
             {
                 Thread.Sleep(5000);
-                app.Query(x => x.Id("datePicker").Invoke("updateDate", year, (month-1), date)); 
+                app.Query(x => x.Id("datePicker").Invoke("updateDate", year, (month - 1), date)); 
 
                 if (app.Query("Done").Any())
                     app.Tap("Done");
@@ -221,7 +230,7 @@ namespace MyShop.Tests
                 app.Tap(Date);
 
                 //Year
-                app.Query(x => x.Class("UIPickerView").Invoke("selectRow", year , "inComponent", 2, "animated", true));
+                app.Query(x => x.Class("UIPickerView").Invoke("selectRow", year, "inComponent", 2, "animated", true));
                 app.Tap(Year);
 
                 app.Tap(DoneButton);
@@ -295,7 +304,7 @@ namespace MyShop.Tests
 
             if (OnAndroid)
                 app.DismissKeyboard();
-            if(OniOS)
+            if (OniOS)
                 app.Tap(DoneButton);
 
             app.Screenshot("Feedback Text Entered");
@@ -306,13 +315,13 @@ namespace MyShop.Tests
         public void SubmitFeedback()
         {
             app.Tap(SubmitButton);
-            app.WaitForNoElement(SubmitButton);
+            app.WaitForNoElement(SubmitButton, timeout: TimeSpan.FromSeconds(90));
             app.Screenshot("Submitted the Feedback");
         }
 
         private void PickerScrollRating(string platform, int count)
         {
-            if(platform.Equals("Android"))
+            if (platform.Equals("Android"))
             {
                 var view = app.Query(RatingDetailField)[0].Rect;
                 while (count > 0)
@@ -327,14 +336,14 @@ namespace MyShop.Tests
                 while (count > 0)
                 {
                     app.Tap(RatingDetailField);
-                    count --;
+                    count--;
                 }
             }
         }
 
         private void PickerScroll(string platform, int count)
         {
-            if(platform.Equals("Android"))
+            if (platform.Equals("Android"))
             {
                 var view = app.Query(RatingDetailField)[0].Rect;
                 while (count > 0)
@@ -349,7 +358,7 @@ namespace MyShop.Tests
                 while (count > 0)
                 {
                     app.Tap(RatingDetailField);
-                    count --;
+                    count--;
                 }
             }
         }

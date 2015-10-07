@@ -29,17 +29,17 @@ end
 
 task :build_android => [:restore_packages] do
   puts "building Android project with:"
-	sh "xbuild #{ANDROID_CSPROJ} /p:Configuration=Debug /t:SignAndroidPackage /verbosity:minimal"
+	sh "xbuild #{ANDROID_CSPROJ} /p:Configuration=Debug /t:SignAndroidPackage /verbosity:quiet"
 end
 
 task :build_ios => [:restore_packages] do
   puts "building iOS project with:"
-  sh "xbuild #{IOS_CSPROJ} /p:Configuration=Debug /p:Platform=iPhone /p:OutputPath='bin/iPhone/Debug/' /verbosity:minimal"
+  sh "xbuild #{IOS_CSPROJ} /p:Configuration=Debug /p:Platform=iPhone /p:OutputPath='bin/iPhone/Debug/' /verbosity:quiet"
 end
 
 task :build_tests => [:restore_packages] do
   puts "building UITest project with:"
-	sh "xbuild #{TEST_CSPROJ} /p:Configuration=Debug /verbosity:minimal"
+	sh "xbuild #{TEST_CSPROJ} /p:Configuration=Debug /verbosity:quiet"
 end
 
 task :restore_packages do
