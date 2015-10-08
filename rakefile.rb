@@ -1,24 +1,25 @@
 require "benchmark"
 
 ### PROPERTIES TO SET
-SLN_FILE = "YourApp.sln"
+SLN_FILE = "MyShop.sln"
 
-ANDROID_DIR = "YourApp.Android"
-IOS_DIR = "YourApp.iOS"
-TEST_DIR = "YourApp.Tests"
+ANDROID_DIR = "MyShop.Android"
+IOS_DIR = "MyShop.iOS"
+TEST_DIR = "MyShop.Tests"
 
-APK_FILE = "YourApp.Android/bin/Debug/YourApp.apk"
-IPA_FILE = "YourApp.iOS/bin/iPhone/Debug/YourApp.ipa"
-DSYM_FILE = "YourApp.iOS/bin/iPhone/Debug/YourApp.app.dSYM"
+APK_FILE = "MyShop.Android/bin/Debug/com.refractored.myshoppe.apk"
+IPA_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS-1.2.ipa"
+DSYM_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS.app.dSYM"
 
 # ANDROID_KEYSTORE = "debug.keystore"
 
 NUGET_VERSION = "1.1.1.255-dev"
-APP_NAME = "Your App"
+APP_NAME = "My Shop"
 ### END
 
 task :default => ['build:android', 'build:ios', 'build:tests']
 
+desc "Get more information on how to use each task"
 task :help do
   puts 'Available tasks:'
   puts 'help'
@@ -27,8 +28,8 @@ task :help do
   puts 'build:ios => build:restore_packages'
   puts 'build:tests => build:restore_packages'
   puts 'build:restore_packages'
-  puts 'submit:android[user, api_key, (series, device_series)] => build:android, build:tests'
-  puts 'submit:ios[user, api_key, (series, device_series)] => build:ios, build:tests'
+  puts 'submit:android[user, api_key, (series, device_set)] => build:android, build:tests'
+  puts 'submit:ios[user, api_key, (series, device_set)] => build:ios, build:tests'
   puts 'clean'
   puts
   puts 'Optional environment variables:'
@@ -40,6 +41,7 @@ task :help do
   puts 'FIXTURE'
 end
 
+desc "Removes bin and obj directories for each Android, iOS, and test projects."
 task :clean do
   [ANDROID_DIR, IOS_DIR, TEST_DIR].each do |dir|
     rm_rf "#{dir}/bin"
@@ -48,6 +50,7 @@ task :clean do
 end
 
 namespace :build do
+  desc "Builds the Android project"
   task :android => [:restore_packages] do
     puts "building Android project with:"
     time = Benchmark.realtime do
@@ -58,6 +61,7 @@ namespace :build do
     puts "*** Android APK size: #{size} MB"
   end
 
+  desc "Builds the iOS project"
   task :ios => [:restore_packages] do
     puts "building iOS project with:"
     time = Benchmark.realtime do
@@ -68,6 +72,7 @@ namespace :build do
     puts "*** iOS IPA size: #{size} MB"
   end
 
+  desc "Builds the test project"
   task :tests => [:restore_packages] do
     puts "building UITest project with:"
     time = Benchmark.realtime do
@@ -76,6 +81,7 @@ namespace :build do
     puts "*** Test build time: #{time.round(1)}"
   end
 
+  desc "Restores packages for all projects"
   task :restore_packages do
     puts "restoring packages with:"
     sh "nuget restore #{SLN_FILE}"
@@ -92,6 +98,7 @@ namespace :build do
 end
 
 namespace :submit do
+  desc "Submits Android app to Test Cloud, \"user_account\" and \"api_key\" are required, \"series\" and \"device_set\" are not"
   task :android, [:user_account, :api_key, :series, :device_set] => ['build:android', 'build:tests'] do |t, args|
     args = verify_args args, "fe5e138d" # small device set
 
@@ -99,6 +106,7 @@ namespace :submit do
     submit_file_with_extra_params APK_FILE, args
   end
 
+  desc "Submits iOS app to Test Cloud, \"user_account\" and \"api_key\" are required, \"series\" and \"device_set\" are not"
   task :ios, [:user_account, :api_key, :series, :device_set] => ['build:ios', 'build:tests'] do |t, args|
     args = verify_args args, "2f802e3f" # small device set
     extras = "--dsym #{DSYM_FILE}"
