@@ -54,10 +54,13 @@ namespace :build do
   task :android => [:restore_packages] do
     puts "building Android project with:"
     time = Benchmark.realtime do
-    	sh "xbuild #{ANDROID_DIR}/*.csproj /p:Configuration=Debug /t:SignAndroidPackage /verbosity:quiet"
+    	sh "xbuild #{ANDROID_DIR}/*.csproj /p:Configuration=Debug /t:SignAndroidPackage" # /verbosity:quiet
     end
+    min = (time / 60).to_i.to_s
+    sec = (time % 60).to_i.to_s
+    sec = sec.length < 2 ? "0" + sec : sec
     size = (File.size(APK_FILE)/1000000.0).round(1)
-    puts "*** Android build time: #{time.round(1)} seconds"
+    puts "*** Android build time: #{min}:#{sec}"
     puts "*** Android APK size: #{size} MB"
   end
 
@@ -65,20 +68,20 @@ namespace :build do
   task :ios => [:restore_packages] do
     puts "building iOS project with:"
     time = Benchmark.realtime do
-      sh "xbuild #{IOS_DIR}/*.csproj /p:Configuration=Debug /p:Platform=iPhone /p:OutputPath='bin/iPhone/Debug/' /verbosity:quiet"
+      sh "xbuild #{IOS_DIR}/*.csproj /p:Configuration=Debug /p:Platform=iPhone /p:OutputPath='bin/iPhone/Debug/'" # /verbosity:quiet
     end
-    size = (File.size(IPA_FILE)/1000000.0).round(1)
-    puts "*** iOS build time: #{time.round(1)} seconds"
+    min = (time / 60).to_i.to_s
+    sec = (time % 60).to_i.to_s
+    sec = sec.length < 2 ? "0" + sec : sec
+    size = (File.size(IPA_FILE) / 1000000.0).round(1)
+    puts "*** iOS build time: #{min}:#{sec}"
     puts "*** iOS IPA size: #{size} MB"
   end
 
   desc "Builds the test project"
   task :tests => [:restore_packages] do
     puts "building UITest project with:"
-    time = Benchmark.realtime do
-    	sh "xbuild #{TEST_DIR}/*.csproj /p:Configuration=Debug /verbosity:quiet"
-    end
-    puts "*** Test build time: #{time.round(1)}"
+  	sh "xbuild #{TEST_DIR}/*.csproj /p:Configuration=Debug /verbosity:quiet"
   end
 
   desc "Restores packages for all projects"
