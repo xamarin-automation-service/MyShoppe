@@ -27,8 +27,8 @@ task :help do
   puts 'build:ios => build:restore_packages'
   puts 'build:tests => build:restore_packages'
   puts 'build:restore_packages'
-  puts 'submit:android[user, api_key, (series, devices)] => build:android, build:tests'
-  puts 'submit:ios[user, api_key, (series, devices)] => build:ios, build:tests'
+  puts 'submit:android[user, api_key, (series, device_series)] => build:android, build:tests'
+  puts 'submit:ios[user, api_key, (series, device_series)] => build:ios, build:tests'
   puts 'clean'
   puts
   puts 'Optional environment variables:'
