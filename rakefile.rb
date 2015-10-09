@@ -1,4 +1,5 @@
 require "benchmark"
+require "date"
 
 ### PROPERTIES TO SET
 SLN_FILE = "MyShop.sln"
@@ -19,7 +20,7 @@ APP_NAME = "My Shop"
 
 task :default => ['build:android', 'build:ios', 'build:tests']
 
-desc "Get more information on how to use each task"
+desc "Get more information tasks and variables"
 task :help do
   puts 'Available tasks:'
   puts 'help'
@@ -53,29 +54,17 @@ namespace :build do
   desc "Builds the Android project"
   task :android => [:restore_packages] do
     puts "building Android project with:"
-    time = Benchmark.realtime do
-    	sh "xbuild #{ANDROID_DIR}/*.csproj /p:Configuration=Debug /t:SignAndroidPackage" # /verbosity:quiet
-    end
-    min = (time / 60).to_i.to_s
-    sec = (time % 60).to_i.to_s
-    sec = sec.length < 2 ? "0" + sec : sec
+    time = time_cmd "xbuild #{ANDROID_DIR}/*.csproj /p:Configuration=Debug /t:SignAndroidPackage /verbosity:quiet /flp:LogFile=build_android.log" # /verbosity:quiet
     size = (File.size(APK_FILE)/1000000.0).round(1)
-    puts "*** Android build time: #{min}:#{sec}"
-    puts "*** Android APK size: #{size} MB"
+    log_data "Android", time, size, "build_android.log"
   end
 
   desc "Builds the iOS project"
   task :ios => [:restore_packages] do
     puts "building iOS project with:"
-    time = Benchmark.realtime do
-      sh "xbuild #{IOS_DIR}/*.csproj /p:Configuration=Debug /p:Platform=iPhone /p:OutputPath='bin/iPhone/Debug/'" # /verbosity:quiet
-    end
-    min = (time / 60).to_i.to_s
-    sec = (time % 60).to_i.to_s
-    sec = sec.length < 2 ? "0" + sec : sec
+    time = time_cmd "xbuild #{IOS_DIR}/*.csproj /p:Configuration=Debug /p:Platform=iPhone /p:OutputPath='bin/iPhone/Debug/' /verbosity:quiet /flp:LogFile=build_ios.log" # /verbosity:quiet
     size = (File.size(IPA_FILE) / 1000000.0).round(1)
-    puts "*** iOS build time: #{min}:#{sec}"
-    puts "*** iOS IPA size: #{size} MB"
+    log_data "iOS", time, size, "build_ios.log"
   end
 
   desc "Builds the test project"
@@ -90,6 +79,37 @@ namespace :build do
     sh "nuget restore #{SLN_FILE}"
   end
 
+  def time_cmd(cmd)
+    time = Benchmark.realtime do
+      sh cmd
+    end
+    min = (time / 60).to_i.to_s
+    sec = (time % 60).to_i.to_s
+    sec = sec.length < 2 ? "0" + sec : sec
+    return "#{min}:#{sec}"
+  end
+
+  def log_data(platform, time, size, log_file)
+    date = DateTime.now.strftime("%m/%d/%Y %I:%M%p")
+    version = /\d+\.\d+\.\d+\.\d+/.match(`mdls -name kMDItemVersion /Applications/Xamarin\\ Studio.app`)
+    user = /\w+$/.match(ENV['HOME'])[0].capitalize
+
+    tail = `tail -n 6 #{log_file}`
+    warnings = /(\d+) Warning\(s\)/.match(tail).captures[0]
+    errors = /(\d+) Error\(s\)/.match(tail).captures[0]
+
+    puts "** date: #{date}"
+    puts "*** platform: #{platform}"
+    puts "*** origin: #{user}"
+    puts "*** version: #{version}"
+    puts "*** size (MB): #{size}"
+    puts "*** time: #{time}"
+    puts "*** warnings: #{warnings}"
+    puts "*** errors: #{errors}"
+
+    puts "#{date}\t#{platform}\t#{user}\t#{version}\t#{size}\t#{time}\t#{warnings}\t#{errors}"
+  end
+
   def addMaptoManifest(xml_file)
       xml_text = File.read(xml_file)
 
@@ -101,7 +121,7 @@ namespace :build do
 end
 
 namespace :submit do
-  desc "Submits Android app to Test Cloud, \"user_account\" and \"api_key\" are required, \"series\" and \"device_set\" are not"
+  desc "Submits Android app to Test Cloud, \"user_account\" and \"api_key\" are required"
   task :android, [:user_account, :api_key, :series, :device_set] => ['build:android', 'build:tests'] do |t, args|
     args = verify_args args, "fe5e138d" # small device set
 
@@ -109,7 +129,7 @@ namespace :submit do
     submit_file_with_extra_params APK_FILE, args
   end
 
-  desc "Submits iOS app to Test Cloud, \"user_account\" and \"api_key\" are required, \"series\" and \"device_set\" are not"
+  desc "Submits iOS app to Test Cloud, \"user_account\" and \"api_key\" are required"
   task :ios, [:user_account, :api_key, :series, :device_set] => ['build:ios', 'build:tests'] do |t, args|
     args = verify_args args, "2f802e3f" # small device set
     extras = "--dsym #{DSYM_FILE}"
