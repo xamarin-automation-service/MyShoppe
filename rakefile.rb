@@ -107,7 +107,7 @@ namespace :build do
     puts "*** warnings: #{warnings}"
     puts "*** errors: #{errors}"
 
-    puts "#{date}\t#{platform}\t#{user}\t#{version}\t#{size}\t#{time}\t#{warnings}\t#{errors}"
+    puts "#{date}, #{platform}, #{user}, #{version}, #{size}, #{time}, #{warnings}, #{errors}"
   end
 
   def addMaptoManifest(xml_file)
