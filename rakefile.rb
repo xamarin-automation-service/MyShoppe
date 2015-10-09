@@ -98,16 +98,15 @@ namespace :build do
     warnings = /(\d+) Warning\(s\)/.match(tail).captures[0]
     errors = /(\d+) Error\(s\)/.match(tail).captures[0]
 
-    puts "*** date: #{date}"
-    puts "*** platform: #{platform}"
     puts "*** origin: #{user}"
-    puts "*** version: #{version}"
-    puts "*** size (MB): #{size}"
-    puts "*** time: #{time}"
+    puts "*** xamarin version: #{version}"
+    puts "*** platform: #{platform}"
+    puts "*** date time: #{date}"
+    puts
+    puts "*** build time: #{time}"
+    puts "*** app size (MB): #{size}"
     puts "*** warnings: #{warnings}"
     puts "*** errors: #{errors}"
-
-    puts "#{date}, #{platform}, #{user}, #{version}, #{size}, #{time}, #{warnings}, #{errors}"
   end
 
   def addMaptoManifest(xml_file)
