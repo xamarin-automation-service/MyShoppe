@@ -98,7 +98,7 @@ namespace :build do
     warnings = /(\d+) Warning\(s\)/.match(tail).captures[0]
     errors = /(\d+) Error\(s\)/.match(tail).captures[0]
 
-    puts "** date: #{date}"
+    puts "*** date: #{date}"
     puts "*** platform: #{platform}"
     puts "*** origin: #{user}"
     puts "*** version: #{version}"
