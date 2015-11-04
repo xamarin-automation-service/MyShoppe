@@ -43,7 +43,7 @@ task :help do
   puts 'FIXTURE'
 end
 
-desc "Removes bin and obj directories for each Android, iOS, and test projects."
+desc "Removes bin and obj directories for Android, iOS, and test projects."
 task :clean do
   [ANDROID_DIR, IOS_DIR, TEST_DIR].each do |dir|
     rm_rf "#{dir}/bin"
@@ -148,7 +148,7 @@ end
 
 namespace :submit do
   desc "Submits Android app to Test Cloud, \"user_account\" and \"api_key\" are required"
-  task :android, [:user_account, :api_key, :series, :device_set] => ['build:android', 'build:tests'] do |t, args|
+  task :android, [:user_account, :api_key, :series, :device_set] => ['build:tests'] do |t, args|
     args = verify_args args, "fe5e138d" # small device set
 
     puts "uploading Android tests to Test Cloud with:"
@@ -156,7 +156,7 @@ namespace :submit do
   end
 
   desc "Submits iOS app to Test Cloud, \"user_account\" and \"api_key\" are required"
-  task :ios, [:user_account, :api_key, :series, :device_set] => ['build:ios', 'build:tests'] do |t, args|
+  task :ios, [:user_account, :api_key, :series, :device_set] => ['build:tests'] do |t, args|
     args = verify_args args, "2f802e3f" # small device set
     extras = "--dsym #{DSYM_FILE}"
 
