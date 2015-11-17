@@ -109,18 +109,21 @@ namespace :build do
     puts "*** warnings: #{warnings}"
     puts "*** errors: #{errors}"
 
-    post_to_sheet("MyShoppe", date, platform, user, version, size, time, warnings, errors)
+    post_to_sheet(date, platform, user, version, size, time, warnings, errors)
   end
 
-  def post_to_sheet(app, date, platform, channel, version, size, time, warnings, errors)
+  def post_to_sheet(date, platform, channel, version, size, time, warnings, errors)
+		return unless ENV['POST_RESULTS'] == "true"
+
     uri = URI("https://script.google.com/macros/s/AKfycbzlrwTXjCjOHY64uOIF3C1yg1GYDpvK8XXcDBfX68c6YhkL21M/exec")
     params = {
       method: 'writeLine',
-      app: app,
+      destSheet: 'Log',
       date: date,
       platform: platform,
       channel: channel,
       version: version,
+      app: APP_NAME,
       size:size,
       time: time,
       warnings: warnings,
@@ -165,7 +168,7 @@ namespace :submit do
   end
 
   def submit_file_with_extra_params(file, args, extras="")
-    cmd = "mono packages/Xamarin.UITest.#{NUGET_VERSION}/tools/test-cloud.exe submit #{file} #{args[:api_key]} --devices #{args[:device_set]} --series '#{args[:series]}' --locale en_US --app-name '#{APP_NAME}' --user #{args[:user_account]} --assembly-dir #{TEST_DIR}/bin/Debug"
+    cmd = "mono packages/Xamarin.UITest.#{NUGET_VERSION}/tools/test-cloud.exe submit #{file} #{args[:api_key]} --devices #{args[:device_set]} --series '#{args[:series]}' --locale en_US --app-name '#{APP_NAME}' --user #{args[:user_account]} --assembly-dir #{TEST_DIR}/bin/Debug --async"
     cmd += " #{extras}"
 
     if !ENV['CATEGORY'].nil?
