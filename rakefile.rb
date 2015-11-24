@@ -17,31 +17,13 @@ DSYM_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS.app.dSYM"
 
 NUGET_VERSION = "1.1.1.255-dev"
 APP_NAME = "My Shop"
+
+DEFAULT_SERIES = "master"
+DEFAULT_IOS_DEVICE_SET = "2f802e3f" # small set
+DEFAULT_ANDROID_DEVICE_SET = "fe5e138d" # small set
 ### END
 
 task :default => ['build:android', 'build:ios', 'build:tests']
-
-desc "Get more information tasks and variables"
-task :help do
-  puts 'Available tasks:'
-  puts 'help'
-  puts 'default => build:android, build:ios, build:tests'
-  puts 'build:android => build:restore_packages'
-  puts 'build:ios => build:restore_packages'
-  puts 'build:tests => build:restore_packages'
-  puts 'build:restore_packages'
-  puts 'submit:android[user, api_key, (series, device_set)] => build:android, build:tests'
-  puts 'submit:ios[user, api_key, (series, device_set)] => build:ios, build:tests'
-  puts 'clean'
-  puts
-  puts 'Optional environment variables:'
-  puts 'USER_ACCOUNT'
-  puts 'API_KEY'
-  puts 'SERIES'
-  puts 'DEVICE_SET'
-  puts 'CATEGORY'
-  puts 'FIXTURE'
-end
 
 desc "Removes bin and obj directories for Android, iOS, and test projects."
 task :clean do
@@ -138,29 +120,21 @@ namespace :build do
 
     puts res.body
   end
-
-  def addMaptoManifest(xml_file)
-      xml_text = File.read(xml_file)
-
-      newContent = xml_text.gsub("\t\t<meta-data android:name=\"com.google.android.maps.v2.API_KEY\" android:value=\"@string/GoogleMapsKey\" />\n",
-          "\t\t<meta-data android:name=\"com.google.android.maps.v2.API_KEY\" android:value=\"AIzaSyBmRuR-M2PV8bF_ljjAQBNzkzSDpmkStfI\" />\n")
-
-      File.open(xml_file, "w"){|newFile| newFile.puts newContent}
-  end
 end
 
 namespace :submit do
-  desc "Submits Android app to Test Cloud, \"user_account\" and \"api_key\" are required"
-  task :android, [:user_account, :api_key, :series, :device_set] => ['build:tests'] do |t, args|
-    args = verify_args args, "fe5e138d" # small device set
+  desc "Submits Android app to Test Cloud"
+  task :android => ['build:tests'] do
+    args = get_submit_args "android"
 
     puts "uploading Android tests to Test Cloud with:"
     submit_file_with_extra_params APK_FILE, args
   end
 
-  desc "Submits iOS app to Test Cloud, \"user_account\" and \"api_key\" are required"
-  task :ios, [:user_account, :api_key, :series, :device_set] => ['build:tests'] do |t, args|
-    args = verify_args args, "2f802e3f" # small device set
+  desc "Submits iOS app to Test Cloud"
+  task :ios => ['build:tests'] do
+    args = get_submit_args "ios"
+
     extras = "--dsym #{DSYM_FILE}"
 
     puts "uploading iOS tests to Test Cloud with:"
@@ -168,45 +142,36 @@ namespace :submit do
   end
 
   def submit_file_with_extra_params(file, args, extras="")
-    cmd = "mono packages/Xamarin.UITest.#{NUGET_VERSION}/tools/test-cloud.exe submit #{file} #{args[:api_key]} --devices #{args[:device_set]} --series '#{args[:series]}' --locale en_US --app-name '#{APP_NAME}' --user #{args[:user_account]} --assembly-dir #{TEST_DIR}/bin/Debug --async"
+    cmd = "mono packages/Xamarin.UITest.#{NUGET_VERSION}/tools/test-cloud.exe submit #{file} #{args[:api_key]} --devices #{args[:device_set]} --series '#{args[:series]}' --locale en_US --app-name '#{APP_NAME}' --user #{args[:user_account]} --assembly-dir #{TEST_DIR}/bin/Debug"
+
+    cmd += " --category #{ENV['CATEGORY']}" unless ENV['CATEGORY'].nil?
+    cmd += " --fixture #{ENV['FIXTURE']}" unless ENV['FIXTURE'].nil?
+    cmd += " --async" if ENV['ASYNC'] == "true"
+
     cmd += " #{extras}"
 
-    if !ENV['CATEGORY'].nil?
-      cmd += " --category #{ENV['CATEGORY']}"
-    end
-    if !ENV['FIXTURE'].nil?
-      cmd += " --fixture #{ENV['FIXTURE']}"
-    end
     sh cmd
   end
 
-  def verify_args(args, default_device_set)
-    newArgs = {}
-    if args[:user_account].nil? && ENV['USER_ACCOUNT'].nil?
-      error = "\nERROR: You must specify a user's email address under which to upload."
-      error += "\nFormat: [user, api_key, (series, device_set)]"
-      error += "\nOr set the USER_ACCOUNT environment variable"
-      raise error
-    else
-      newArgs[:user_account] =  args[:user_account] || ENV['USER_ACCOUNT']
+  def get_submit_args(platform)
+    args = {}
+
+    args[:user_account] =  ENV['USER_ACCOUNT']
+    args[:api_key] = ENV['API_KEY']
+
+    args.each do |arg, val|
+      raise "ERROR: You must specify the '#{arg}' environment variable" if val.nil?
     end
-    if args[:api_key].nil? && ENV['API_KEY'].nil?
-      error = "\nERROR: You must specify a Test Cloud API key."
-      error += "\nFormat: [user, api_key, (series, device_set)]"
-      error += "\nOr set the API_KEY environment variable"
-      raise error
-    else
-      newArgs[:api_key] = args[:api_key] || ENV['API_KEY']
+
+    args[:series] = ENV['SERIES'] || DEFAULT_SERIES
+
+    case platform
+    when "android"
+      args[:device_set] = ENV['ANDROID_DEVICE_SET'] || DEFAULT_ANDROID_DEVICE_SET
+    when "ios"
+      args[:device_set] = ENV['IOS_DEVICE_SET'] || DEFAULT_IOS_DEVICE_SET
     end
-    if !args[:series].nil? && args[:device_set].nil?
-      error = "\nERROR: If you specify a series or device set you must specify both."
-      error += "\nFormat: [user, api_key, (series, device_set)]"
-      error += "\nThey default to \"master\" and a small device set"
-      raise error
-    else
-      newArgs[:series] = args[:series] || ENV['SERIES'] || "master"
-      newArgs[:device_set] = args[:device_set] || ENV['DEVICE_SET'] || default_device_set
-    end
-    return newArgs
+
+    return args
   end
 end
