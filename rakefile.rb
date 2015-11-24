@@ -15,7 +15,7 @@ DSYM_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS.app.dSYM"
 
 # ANDROID_KEYSTORE = "debug.keystore"
 
-NUGET_VERSION = "1.1.1.255-dev"
+NUGET_VERSION = "1.2.0"
 APP_NAME = "My Shop"
 
 DEFAULT_SERIES = "master"
