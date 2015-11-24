@@ -3,20 +3,19 @@ require "date"
 require 'net/http'
 
 ### PROPERTIES TO SET
-SLN_FILE = "MyShop.sln"
+APP_NAME = "My Shop"
 
 ANDROID_DIR = "MyShop.Android"
 IOS_DIR = "MyShop.iOS"
 TEST_DIR = "MyShop.Tests"
+PACKAGE_DIR = "packages/Xamarin.UITest.1.2.0"
 
-APK_FILE = "MyShop.Android/bin/Debug/com.refractored.myshoppe.apk"
+SLN_FILE = "MyShop.sln"
+APK_FILE = "MyShop.Android/bin/Release/com.refractored.myshoppe.apk"
 IPA_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS-1.2.ipa"
 DSYM_FILE = "MyShop.iOS/bin/iPhone/Debug/MyShopiOS.app.dSYM"
 
 # ANDROID_KEYSTORE = "debug.keystore"
-
-NUGET_VERSION = "1.2.0"
-APP_NAME = "My Shop"
 
 DEFAULT_SERIES = "master"
 DEFAULT_IOS_DEVICE_SET = "2f802e3f" # small set
@@ -37,7 +36,7 @@ namespace :build do
   desc "Builds the Android project"
   task :android => [:restore_packages] do
     puts "building Android project with:"
-    time = time_cmd "xbuild #{ANDROID_DIR}/*.csproj /p:Configuration=Debug /t:SignAndroidPackage /verbosity:quiet /flp:LogFile=build_android.log" # /verbosity:quiet
+    time = time_cmd "xbuild #{ANDROID_DIR}/*.csproj /p:Configuration=Release /t:SignAndroidPackage /verbosity:quiet /flp:LogFile=build_android.log" # /verbosity:quiet
     size = (File.size(APK_FILE)/1000000.0).round(1)
     log_data "Android", time, size, "build_android.log"
   end
@@ -142,7 +141,7 @@ namespace :submit do
   end
 
   def submit_file_with_extra_params(file, args, extras="")
-    cmd = "mono packages/Xamarin.UITest.#{NUGET_VERSION}/tools/test-cloud.exe submit #{file} #{args[:api_key]} --devices #{args[:device_set]} --series '#{args[:series]}' --locale en_US --app-name '#{APP_NAME}' --user #{args[:user_account]} --assembly-dir #{TEST_DIR}/bin/Debug"
+    cmd = "mono #{PACKAGE_DIR}/tools/test-cloud.exe submit #{file} #{args[:api_key]} --devices #{args[:device_set]} --series '#{args[:series]}' --locale en_US --app-name '#{APP_NAME}' --user #{args[:user_account]} --assembly-dir #{TEST_DIR}/bin/Debug"
 
     cmd += " --category #{ENV['CATEGORY']}" unless ENV['CATEGORY'].nil?
     cmd += " --fixture #{ENV['FIXTURE']}" unless ENV['FIXTURE'].nil?
